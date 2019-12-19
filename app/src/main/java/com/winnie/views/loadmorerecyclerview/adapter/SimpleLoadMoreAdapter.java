@@ -27,8 +27,8 @@ public class SimpleLoadMoreAdapter extends BaseLoadMoreAdapter<RecyclerActivityD
     private List<RecyclerActivityData> mDataList;
     private OnItemClickListener mOnItemClickListener;
 
-    public SimpleLoadMoreAdapter(Context context, List<RecyclerActivityData> data, int totalNum) {
-        super(context, data, totalNum);
+    public SimpleLoadMoreAdapter(List<RecyclerActivityData> data, int totalNum) {
+        super(data == null? 0: data.size(), totalNum);
         mDataList = data;
         if (mDataList == null) {
             mDataList = new ArrayList<>();
@@ -55,13 +55,17 @@ public class SimpleLoadMoreAdapter extends BaseLoadMoreAdapter<RecyclerActivityD
         }
     }
 
+    @Override
+    public int getDataListCount() {
+        return mDataList.size();
+    }
+
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
         mOnItemClickListener = onItemClickListener;
     }
 
     public void addData(RecyclerActivityData data){
         mDataList.add(data);
-        mData = mDataList;
     }
 
     public void setDataList(List<RecyclerActivityData> dataList) {
@@ -69,7 +73,6 @@ public class SimpleLoadMoreAdapter extends BaseLoadMoreAdapter<RecyclerActivityD
         if (mDataList == null) {
             mDataList = new ArrayList<>();
         }
-        mData = mDataList;
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {

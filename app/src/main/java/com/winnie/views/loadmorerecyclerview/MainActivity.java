@@ -47,24 +47,10 @@ public class MainActivity extends AppCompatActivity {
         List<RecyclerActivityData> dataList = new ArrayList<>();
         dataList.add(new RecyclerActivityData("抽象Adapter的上拉加载", SimpleLoadMoreActivity.class));
         dataList.add(new RecyclerActivityData("包装Adapter的上拉加载", LoadMoreActivity.class));
-        dataList.add(new RecyclerActivityData("Activity3"));
-        dataList.add(new RecyclerActivityData("Activity4"));
-        dataList.add(new RecyclerActivityData("Activity5"));
-        dataList.add(new RecyclerActivityData("Activity6"));
-        dataList.add(new RecyclerActivityData("Activity7"));
-        dataList.add(new RecyclerActivityData("Activity8"));
-        dataList.add(new RecyclerActivityData("Activity9"));
-        dataList.add(new RecyclerActivityData("Activity10"));
-        dataList.add(new RecyclerActivityData("Activity11"));
-        dataList.add(new RecyclerActivityData("Activity12"));
-        dataList.add(new RecyclerActivityData("Activity13"));
-        dataList.add(new RecyclerActivityData("Activity14"));
-        dataList.add(new RecyclerActivityData("Activity15"));
-        dataList.add(new RecyclerActivityData("Activity16"));
-        dataList.add(new RecyclerActivityData("Activity17"));
-        dataList.add(new RecyclerActivityData("Activity18"));
-        dataList.add(new RecyclerActivityData("Activity19"));
-        mAdapter = new SimpleLoadMoreAdapter(this, dataList, 100);
+        for (int i = 0; i < 20; i++) {
+            dataList.add(new RecyclerActivityData("Activity" + i));
+        }
+        mAdapter = new SimpleLoadMoreAdapter(dataList, 100);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             //用来标记是否正在向上滑动

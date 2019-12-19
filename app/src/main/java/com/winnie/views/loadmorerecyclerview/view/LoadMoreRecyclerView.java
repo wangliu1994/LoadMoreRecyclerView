@@ -91,12 +91,28 @@ public class LoadMoreRecyclerView extends RecyclerView {
         }
     }
 
+    /**
+     * 设置列表总数，用于判断是否还有未加载出来的数据
+     * @param totalNum 总数
+     */
+    public void setTotalNum(int totalNum){
+        mWrapperAdapter.setTotalNum(totalNum);
+    }
+
+    /**
+     * 上拉加载监听
+     * @param onLoadMoreListener 监听
+     */
+    public void setOnLoadMoreListener(OnLoadMoreListener onLoadMoreListener) {
+        mOnLoadMoreListener = onLoadMoreListener;
+    }
+
     @Override
     public void setAdapter(Adapter adapter) {
         mWrapperAdapter = new LoadMoreAdapterWrapper(adapter);
         super.setAdapter(mWrapperAdapter);
-//        adapter.registerAdapterDataObserver(this.mDataObserver);
-//        this.mDataObserver.onChanged();
+        adapter.registerAdapterDataObserver(this.mDataObserver);
+        this.mDataObserver.onChanged();
     }
 
     @Nullable
@@ -108,64 +124,52 @@ public class LoadMoreRecyclerView extends RecyclerView {
         return mWrapperAdapter.getInnerAdapter();
     }
 
-    public void setTotalNum(int totalNum){
-        mWrapperAdapter.setTotalNum(totalNum);
-    }
+
 
     /**
-     * 加载完成
-     */
-    public void loadingComplete() {
-        if (mWrapperAdapter == null) {
-            return;
-        }
-        mWrapperAdapter.setLoadState(AdapterConstant.LOADING_COMPLETE);
-    }
-
-    /**
-     * 加载到底,没有更多
-     */
-    public void loadingEnd() {
-        if (mWrapperAdapter == null) {
-            return;
-        }
-        mWrapperAdapter.setLoadState(AdapterConstant.LOADING_END);
-    }
-
-    /**
-     * 只有一页数据，没有更多
-     */
-    public void loadingNoMore() {
-        if (mWrapperAdapter == null) {
-            return;
-        }
-        mWrapperAdapter.setLoadState(AdapterConstant.LOADING_NO_MORE);
-    }
-
-    public void setOnLoadMoreListener(OnLoadMoreListener onLoadMoreListener) {
-        mOnLoadMoreListener = onLoadMoreListener;
-    }
-
-    /**
-     * 数据监听
+     * 数据变动监听，innerAdapter通过DataObserver通知wrapperAdapter
      */
     private class DataObserver extends AdapterDataObserver {
         @Override
         public void onChanged() {
             super.onChanged();
-//            mInnerAdapter.addMoreData();
+            mWrapperAdapter.notifyDataSetChanged();
+            mWrapperAdapter.dataNumChanged();
         }
 
         @Override
         public void onItemRangeInserted(int positionStart, int itemCount) {
             super.onItemRangeInserted(positionStart, itemCount);
+            mWrapperAdapter.notifyItemRangeInserted(positionStart, itemCount);
+            mWrapperAdapter.dataNumChanged();
+        }
+
+        @Override
+        public void onItemRangeChanged(int positionStart, int itemCount) {
+            super.onItemRangeChanged(positionStart, itemCount);
+            mWrapperAdapter.notifyItemRangeChanged(positionStart, itemCount);
+        }
+
+        @Override
+        public void onItemRangeChanged(int positionStart, int itemCount, @Nullable Object payload) {
+            super.onItemRangeChanged(positionStart, itemCount, payload);
+            mWrapperAdapter.notifyItemRangeChanged(positionStart, itemCount, payload);
         }
 
         @Override
         public void onItemRangeRemoved(int positionStart, int itemCount) {
             super.onItemRangeRemoved(positionStart, itemCount);
+            mWrapperAdapter.notifyItemRangeRemoved(positionStart, itemCount);
+            mWrapperAdapter.dataNumChanged();
+        }
+
+        @Override
+        public void onItemRangeMoved(int fromPosition, int toPosition, int itemCount) {
+            super.onItemRangeMoved(fromPosition, toPosition, itemCount);
+            mWrapperAdapter.notifyItemMoved(fromPosition, toPosition);
         }
     }
+
 
 
     /**
@@ -266,6 +270,10 @@ public class LoadMoreRecyclerView extends RecyclerView {
             return mLoadState;
         }
 
+        /**
+         * 设置列表总数，用于判断是否还有未加载出来的数据
+         * @param totalNum 总数
+         */
         private void setTotalNum(int totalNum) {
             mTotalNum = totalNum;
             if (mInnerAdapter.getItemCount() >= mTotalNum) {
@@ -276,15 +284,17 @@ public class LoadMoreRecyclerView extends RecyclerView {
             notifyDataSetChanged();
         }
 
-        private void addData(){
-            mTotalNum++;
+        /**
+         * 列表数量变化，可能会影响mTotalNum，需要做处理
+         */
+        private void dataNumChanged() {
             if (mInnerAdapter.getItemCount() >= mTotalNum) {
-                setLoadState(AdapterConstant.LOADING_NO_MORE);
+                setLoadState(AdapterConstant.LOADING_END);
             } else {
                 setLoadState(AdapterConstant.LOADING_COMPLETE);
             }
-            notifyDataSetChanged();
         }
+
 
         /**
          * 上拉加载footer布局
@@ -300,6 +310,7 @@ public class LoadMoreRecyclerView extends RecyclerView {
             }
         }
     }
+
 
     /**
      * 上拉加载监听

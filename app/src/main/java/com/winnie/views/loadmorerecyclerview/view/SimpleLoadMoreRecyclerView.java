@@ -17,7 +17,11 @@ import com.winnie.views.loadmorerecyclerview.constant.AdapterConstant;
  * @desc 下拉加载的RecyclerView
  */
 public class SimpleLoadMoreRecyclerView extends RecyclerView {
+    private final AdapterDataObserver mDataObserver = new DataObserver();
+
     private OnLoadMoreListener mOnLoadMoreListener;
+
+    private BaseLoadMoreAdapter mAdapter;
 
     public SimpleLoadMoreRecyclerView(@NonNull Context context) {
         super(context);
@@ -55,7 +59,7 @@ public class SimpleLoadMoreRecyclerView extends RecyclerView {
 
                     // 判断是否滑动到了最后一个item，并且是向上滑动
                     if (lastItemPosition == (itemCount - 1) && isSlidingUpward) {
-                       loadMore();
+                        loadMore();
                     }
                 }
             }
@@ -88,20 +92,43 @@ public class SimpleLoadMoreRecyclerView extends RecyclerView {
         if(!(adapter instanceof BaseLoadMoreAdapter)){
             throw new RuntimeException("必须使用BaseLoadMoreAdapter");
         }
-        super.setAdapter(adapter);
+        mAdapter = (BaseLoadMoreAdapter) adapter;
+        mAdapter.registerAdapterDataObserver(mDataObserver);
+        super.setAdapter(mAdapter);
     }
 
     public BaseLoadMoreAdapter getLoadMoreAdapter() {
-        Adapter adapter = super.getAdapter();
-        if(!(adapter instanceof BaseLoadMoreAdapter)){
-            throw new RuntimeException("必须使用BaseLoadMoreAdapter");
-        }
-        return (BaseLoadMoreAdapter) adapter;
+        return mAdapter;
     }
 
     public void setOnLoadMoreListener(OnLoadMoreListener onLoadMoreListener) {
         mOnLoadMoreListener = onLoadMoreListener;
     }
+
+    /**
+     * 数据变动监听，innerAdapter通过DataObserver通知wrapperAdapter
+     */
+    private class DataObserver extends AdapterDataObserver {
+        @Override
+        public void onChanged() {
+            super.onChanged();
+            mAdapter.dataNumChanged();
+        }
+
+        @Override
+        public void onItemRangeInserted(int positionStart, int itemCount) {
+            super.onItemRangeInserted(positionStart, itemCount);
+            mAdapter.dataNumChanged();
+        }
+
+
+        @Override
+        public void onItemRangeRemoved(int positionStart, int itemCount) {
+            super.onItemRangeRemoved(positionStart, itemCount);
+            mAdapter.dataNumChanged();
+        }
+    }
+
 
     /**
      * 上拉加载监听

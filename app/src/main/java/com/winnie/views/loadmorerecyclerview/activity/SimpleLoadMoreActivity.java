@@ -40,26 +40,10 @@ public class SimpleLoadMoreActivity extends AppCompatActivity {
 
     private void initView() {
         List<RecyclerActivityData> dataList = new ArrayList<>();
-        dataList.add(new RecyclerActivityData("Activity1"));
-        dataList.add(new RecyclerActivityData("Activity2"));
-        dataList.add(new RecyclerActivityData("Activity3"));
-        dataList.add(new RecyclerActivityData("Activity4"));
-        dataList.add(new RecyclerActivityData("Activity5"));
-        dataList.add(new RecyclerActivityData("Activity6"));
-        dataList.add(new RecyclerActivityData("Activity7"));
-        dataList.add(new RecyclerActivityData("Activity8"));
-        dataList.add(new RecyclerActivityData("Activity9"));
-        dataList.add(new RecyclerActivityData("Activity10"));
-        dataList.add(new RecyclerActivityData("Activity11"));
-        dataList.add(new RecyclerActivityData("Activity12"));
-        dataList.add(new RecyclerActivityData("Activity13"));
-        dataList.add(new RecyclerActivityData("Activity14"));
-        dataList.add(new RecyclerActivityData("Activity15"));
-        dataList.add(new RecyclerActivityData("Activity16"));
-        dataList.add(new RecyclerActivityData("Activity17"));
-        dataList.add(new RecyclerActivityData("Activity18"));
-        dataList.add(new RecyclerActivityData("Activity19"));
-        mAdapter = new SimpleLoadMoreAdapter(this, dataList, 30);
+        for (int i = 0; i < 20; i++) {
+            dataList.add(new RecyclerActivityData("Activity" + i));
+        }
+        mAdapter = new SimpleLoadMoreAdapter(dataList, 30);
         mAdapter.setOnItemClickListener((pos, data) -> {
             if (data.getActivity() != null) {
                 startActivity(new Intent(SimpleLoadMoreActivity.this, data.getActivity()));
@@ -74,10 +58,11 @@ public class SimpleLoadMoreActivity extends AppCompatActivity {
         mRecyclerView.postDelayed(() -> {
             loadMoreCount++;
 
-            mAdapter.addData(new RecyclerActivityData("AddData" + loadMoreCount));
+            for (int i = 0; i < 10; i++) {
+                loadMoreCount++;
+                mAdapter.addData(new RecyclerActivityData("AddData" + loadMoreCount));
+            }
             mAdapter.notifyDataSetChanged();
-
-            mAdapter.setLoadState(AdapterConstant.LOADING_COMPLETE);
         }, 1000);
     }
 }

@@ -1,6 +1,5 @@
 package com.winnie.views.loadmorerecyclerview.adapter;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,22 +27,20 @@ public abstract class BaseLoadMoreAdapter<K, Y extends
      */
     private int mLoadState = AdapterConstant.LOADING_COMPLETE;
 
-    protected Context mContext;
-    protected List<K> mData;
+    /**
+     * 当前的数量
+     */
+    private int mCurrentNum;
 
     /**
      * 数据总条数
      */
-    protected int mTotalNum;
+    private int mTotalNum;
 
-    public BaseLoadMoreAdapter(Context context, List<K> data, int totalNum) {
-        mContext = context;
-        mData = data;
-        if (mData == null) {
-            mData = new ArrayList<>();
-        }
+    public BaseLoadMoreAdapter(int currentNum, int totalNum) {
+        this.mCurrentNum = currentNum;
         this.mTotalNum = totalNum;
-        if (mData.size() >= mTotalNum) {
+        if (mCurrentNum >= mTotalNum + 1) {
             setLoadState(AdapterConstant.LOADING_NO_MORE);
         } else {
             setLoadState(AdapterConstant.LOADING_COMPLETE);
@@ -69,7 +66,7 @@ public abstract class BaseLoadMoreAdapter<K, Y extends
             return new FootViewHolder(view);
         } else if (viewType == AdapterConstant.TYPE_ITEM) {
             return createItemViewHolder(parent, viewType);
-        }else {
+        } else {
             return createItemViewHolder(parent, viewType);
         }
     }
@@ -107,19 +104,6 @@ public abstract class BaseLoadMoreAdapter<K, Y extends
                     break;
             }
         } else {
-            K itemData = mData.get(position);
-            holder.itemView.setOnClickListener(v -> {
-                if (mOnItemClickListener != null) {
-                    mOnItemClickListener.onItemClick(itemData, position);
-                }
-            });
-            holder.itemView.setOnLongClickListener(v -> {
-                if (mOnItemClickListener != null) {
-                    mOnItemClickListener.onItemLongClick(holder.itemView, itemData, position);
-                    return true;
-                }
-                return false;
-            });
             bindItemViewHolder(holder, position);
         }
     }
@@ -132,33 +116,30 @@ public abstract class BaseLoadMoreAdapter<K, Y extends
      */
     public abstract void bindItemViewHolder(RecyclerView.ViewHolder holder, int position);
 
+    /**
+     * 获取列表数据总数
+     * @return 列表数据总数
+     */
+    public abstract int getDataListCount();
+
     @Override
     public int getItemCount() {
-        if (mData == null || mData.isEmpty()) {
-            return 0;
-        }
-        return mData.size() + 1;
+        return getDataListCount() + 1;
     }
 
-    public <E extends K> void addMoreData(List<E> data, int totalNum) {
-        if (data != null && !data.isEmpty()) {
-            mData.addAll(data);
+    /**
+     * 列表数量变化，可能会影响mTotalNum，需要做处理
+     */
+    public void dataNumChanged() {
+        if (getDataListCount() == mCurrentNum) {
+            return;
         }
-        this.mTotalNum = totalNum;
-        if (mData.size() >= mTotalNum) {
+        mCurrentNum = getDataListCount();
+        if (getItemCount() > mTotalNum) {
             setLoadState(AdapterConstant.LOADING_END);
         } else {
             setLoadState(AdapterConstant.LOADING_COMPLETE);
         }
-        notifyDataSetChanged();
-    }
-
-    public <E extends K> void removeData(E data) {
-        if (data != null) {
-            mData.remove(data);
-        }
-        mTotalNum = mTotalNum - 1;
-        notifyDataSetChanged();
     }
 
     /**
@@ -184,27 +165,5 @@ public abstract class BaseLoadMoreAdapter<K, Y extends
             tvLoadingState = itemView.findViewById(R.id.tv_loading_state);
             mProgressBar = itemView.findViewById(R.id.progress_bar);
         }
-    }
-
-
-    protected OnItemClickListener<K> mOnItemClickListener;
-
-    public interface OnItemClickListener<T> {
-        /**
-         * item被点击
-         *
-         * @param itemData item的数据
-         * @param pos      item的位置
-         */
-        void onItemClick(T itemData, int pos);
-
-        /**
-         * item被长按点击
-         *
-         * @param parent   xxx
-         * @param itemData item的数据
-         * @param pos      item的位置
-         */
-        void onItemLongClick(View parent, T itemData, int pos);
     }
 }
