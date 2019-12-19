@@ -8,7 +8,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.winnie.views.loadmorerecyclerview.R;
 import com.winnie.views.loadmorerecyclerview.adapter.SimpleLoadMoreAdapter;
-import com.winnie.views.loadmorerecyclerview.constant.AdapterConstant;
 import com.winnie.views.loadmorerecyclerview.model.RecyclerActivityData;
 import com.winnie.views.loadmorerecyclerview.view.SimpleLoadMoreRecyclerView;
 
