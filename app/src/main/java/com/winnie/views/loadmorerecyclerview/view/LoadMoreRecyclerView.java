@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.winnie.views.loadmorerecyclerview.R;
 import com.winnie.views.loadmorerecyclerview.constant.AdapterConstant;
+import com.winnie.views.loadmorerecyclerview.constant.LoadMoreState;
 
 /**
  * @author : winnie
@@ -82,10 +83,10 @@ public class LoadMoreRecyclerView extends RecyclerView {
      * 上拉加载
      */
     private void loadMore() {
-        if (mWrapperAdapter.getLoadState() != AdapterConstant.LOADING_COMPLETE) {
+        if (mWrapperAdapter.getLoadState() != LoadMoreState.LOADING_COMPLETE) {
             return;
         }
-        mWrapperAdapter.setLoadState(AdapterConstant.LOADING);
+        mWrapperAdapter.setLoadState(LoadMoreState.LOADING);
         if (mOnLoadMoreListener != null) {
             mOnLoadMoreListener.onLoadMore(this);
         }
@@ -184,7 +185,7 @@ public class LoadMoreRecyclerView extends RecyclerView {
         /**
          * 当前加载状态，默认为加载完成
          */
-        private int mLoadState = AdapterConstant.LOADING_NO_MORE;
+        private LoadMoreState mLoadState = LoadMoreState.LOADING_NO_MORE;
 
         /**
          * 数据总条数
@@ -225,19 +226,19 @@ public class LoadMoreRecyclerView extends RecyclerView {
             if (holder instanceof FootViewHolder) {
                 FootViewHolder footViewHolder = (FootViewHolder) holder;
                 switch (mLoadState) {
-                    case AdapterConstant.LOADING:
+                    case LOADING:
                         footViewHolder.tvLoadingState.setText("正在加载");
                         footViewHolder.mProgressBar.setVisibility(View.VISIBLE);
                         break;
-                    case AdapterConstant.LOADING_COMPLETE:
+                    case LOADING_COMPLETE:
                         footViewHolder.tvLoadingState.setText("加载完成");
                         footViewHolder.mProgressBar.setVisibility(View.GONE);
                         break;
-                    case AdapterConstant.LOADING_END:
+                    case LOADING_END:
                         footViewHolder.tvLoadingState.setText("加载到底");
                         footViewHolder.mProgressBar.setVisibility(View.GONE);
                         break;
-                    case AdapterConstant.LOADING_NO_MORE:
+                    case LOADING_NO_MORE:
                     default:
                         footViewHolder.tvLoadingState.setVisibility(View.GONE);
                         footViewHolder.mProgressBar.setVisibility(View.GONE);
@@ -261,12 +262,12 @@ public class LoadMoreRecyclerView extends RecyclerView {
          *
          * @param loadState 0.正在加载 1.加载完成 2.加载到底
          */
-        private void setLoadState(int loadState) {
+        private void setLoadState(LoadMoreState loadState) {
             this.mLoadState = loadState;
             notifyDataSetChanged();
         }
 
-        private int getLoadState() {
+        private LoadMoreState getLoadState() {
             return mLoadState;
         }
 
@@ -277,9 +278,9 @@ public class LoadMoreRecyclerView extends RecyclerView {
         private void setTotalNum(int totalNum) {
             mTotalNum = totalNum;
             if (mInnerAdapter.getItemCount() >= mTotalNum) {
-                setLoadState(AdapterConstant.LOADING_NO_MORE);
+                setLoadState(LoadMoreState.LOADING_NO_MORE);
             } else {
-                setLoadState(AdapterConstant.LOADING_COMPLETE);
+                setLoadState(LoadMoreState.LOADING_COMPLETE);
             }
             notifyDataSetChanged();
         }
@@ -289,9 +290,9 @@ public class LoadMoreRecyclerView extends RecyclerView {
          */
         private void dataNumChanged() {
             if (mInnerAdapter.getItemCount() >= mTotalNum) {
-                setLoadState(AdapterConstant.LOADING_END);
+                setLoadState(LoadMoreState.LOADING_END);
             } else {
-                setLoadState(AdapterConstant.LOADING_COMPLETE);
+                setLoadState(LoadMoreState.LOADING_COMPLETE);
             }
         }
 

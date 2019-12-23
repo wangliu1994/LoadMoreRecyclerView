@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.winnie.views.loadmorerecyclerview.adapter.BaseLoadMoreAdapter;
 import com.winnie.views.loadmorerecyclerview.constant.AdapterConstant;
+import com.winnie.views.loadmorerecyclerview.constant.LoadMoreState;
 
 /**
  * @author : winnie
@@ -77,11 +78,11 @@ public class SimpleLoadMoreRecyclerView extends RecyclerView {
      * 上拉加载
      */
     private void loadMore(){
-        if (getLoadMoreAdapter().getLoadState() != AdapterConstant.LOADING_COMPLETE) {
+        if (getLoadMoreAdapter().getLoadState() != LoadMoreState.LOADING_COMPLETE) {
             return;
         }
 
-        getLoadMoreAdapter().setLoadState(AdapterConstant.LOADING);
+        getLoadMoreAdapter().setLoadState(LoadMoreState.LOADING);
         if(mOnLoadMoreListener != null){
             mOnLoadMoreListener.onLoadMore(this);
         }

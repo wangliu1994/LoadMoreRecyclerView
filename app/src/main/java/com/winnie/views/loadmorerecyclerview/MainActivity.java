@@ -12,6 +12,7 @@ import com.winnie.views.loadmorerecyclerview.activity.LoadMoreActivity;
 import com.winnie.views.loadmorerecyclerview.activity.SimpleLoadMoreActivity;
 import com.winnie.views.loadmorerecyclerview.adapter.SimpleLoadMoreAdapter;
 import com.winnie.views.loadmorerecyclerview.constant.AdapterConstant;
+import com.winnie.views.loadmorerecyclerview.constant.LoadMoreState;
 import com.winnie.views.loadmorerecyclerview.model.RecyclerActivityData;
 
 import java.util.ArrayList;
@@ -67,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
 
                     // 判断是否滑动到了最后一个item，并且是向上滑动
                     if (lastItemPosition == (itemCount - 1) && isSlidingUpward) {
-                        mAdapter.setLoadState(AdapterConstant.LOADING);
+                        mAdapter.setLoadState(LoadMoreState.LOADING);
                         //加载更多
                         mRecyclerView.postDelayed(() -> loadMoreData(), 1000);
                     }
@@ -94,6 +95,6 @@ public class MainActivity extends AppCompatActivity {
 
         mAdapter.addData(new RecyclerActivityData("AddData" + loadMoreCount));
         mAdapter.notifyDataSetChanged();
-        mAdapter.setLoadState(AdapterConstant.LOADING_COMPLETE);
+        mAdapter.setLoadState(LoadMoreState.LOADING_COMPLETE);
     }
 }
