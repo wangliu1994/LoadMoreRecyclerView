@@ -5,6 +5,11 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.Interpolator;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -228,20 +233,20 @@ public class LoadMoreRecyclerView extends RecyclerView {
                 switch (mLoadState) {
                     case LOADING:
                         footViewHolder.tvLoadingState.setText("正在加载");
-                        footViewHolder.mProgressBar.setVisibility(View.VISIBLE);
+                        footViewHolder.showLoading();
                         break;
                     case LOADING_COMPLETE:
                         footViewHolder.tvLoadingState.setText("加载完成");
-                        footViewHolder.mProgressBar.setVisibility(View.GONE);
+                        footViewHolder.hideLoading();
                         break;
                     case LOADING_END:
                         footViewHolder.tvLoadingState.setText("加载到底");
-                        footViewHolder.mProgressBar.setVisibility(View.GONE);
+                        footViewHolder.hideLoading();
                         break;
                     case LOADING_NO_MORE:
                     default:
                         footViewHolder.tvLoadingState.setVisibility(View.GONE);
-                        footViewHolder.mProgressBar.setVisibility(View.GONE);
+                        footViewHolder.hideLoading();
                         break;
                 }
             } else {
@@ -302,12 +307,36 @@ public class LoadMoreRecyclerView extends RecyclerView {
          */
         private class FootViewHolder extends RecyclerView.ViewHolder {
             TextView tvLoadingState;
-            ProgressBar mProgressBar;
+            ImageView mIvProgress;
+
+            /**
+             * 动画相关的配置
+             */
+            private final int ROTATION_ANIMATION_DURATION = 1500;
+            private final Interpolator ANIMATION_INTERPOLATOR = new LinearInterpolator();
+            private Animation mRotateAnimation;
 
             FootViewHolder(View itemView) {
                 super(itemView);
                 tvLoadingState = itemView.findViewById(R.id.tv_loading_state);
-                mProgressBar = itemView.findViewById(R.id.progress_bar);
+                mIvProgress = itemView.findViewById(R.id.image_progress);
+
+                mRotateAnimation = new RotateAnimation(0, 720, Animation.RELATIVE_TO_SELF,
+                        0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+                mRotateAnimation.setInterpolator(ANIMATION_INTERPOLATOR);
+                mRotateAnimation.setDuration(ROTATION_ANIMATION_DURATION);
+                mRotateAnimation.setRepeatCount(Animation.INFINITE);
+                mRotateAnimation.setRepeatMode(Animation.RESTART);
+            }
+
+            void showLoading(){
+                mIvProgress.setVisibility(View.VISIBLE);
+                mIvProgress.startAnimation(mRotateAnimation);
+            }
+
+            void hideLoading(){
+                mIvProgress.clearAnimation();
+                mIvProgress.setVisibility(View.GONE);
             }
         }
     }
